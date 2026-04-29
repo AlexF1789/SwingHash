@@ -19,7 +19,7 @@ public class Hash extends Thread {
     }
     
     @Override
-    public void start() {
+    public void run() {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
             
@@ -49,5 +49,18 @@ public class Hash extends Thread {
             hash = null;
         }
     }
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+    
 
 }
