@@ -1,20 +1,19 @@
 package net.alexf1789.swinghash;
 
-import java.util.Map.Entry;
+import javax.swing.SwingUtilities;
 
-import net.alexf1789.swinghash.models.StringResource;
-import net.alexf1789.swinghash.services.Hasher;
+import com.formdev.flatlaf.FlatLightLaf;
+
+import net.alexf1789.swinghash.frames.MainFrame;
 
 public class Main {
 
     public static void main(String[] args) throws InterruptedException {
-        String[] algos = {"SHA-256", "SHA-512", "MD5", "SHA-3", "SHA-1", "CR32"};
-        StringResource sr = new StringResource("Gianni");
-        Hasher hasher = new Hasher(algos, sr);
+        // let's apply the FlatLightLaf look and feel to the application
+        FlatLightLaf.setup();
         
-        for(Entry<String, String> hash : hasher.getHashes().entrySet()) {
-            System.out.println(String.format("%s: %s", hash.getKey(), hash.getValue()));
-        }
+        // let's create the main application frame
+        SwingUtilities.invokeLater(MainFrame::new);
     }
 
 }
