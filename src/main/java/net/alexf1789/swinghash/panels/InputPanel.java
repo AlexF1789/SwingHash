@@ -54,6 +54,7 @@ public class InputPanel extends JPanel {
         add(inputLabel, gbc);
         
         gbc.gridx = 1;
+        gbc.gridwidth = 3;
         gbc.weightx = 0.9;
         
         add(textInput, gbc);
@@ -61,11 +62,13 @@ public class InputPanel extends JPanel {
         // verify label and field
         gbc.gridx = 0;
         gbc.gridy = 1;
+        gbc.gridwidth = 1;
         gbc.weightx = 0.1;
         
         add(verifyLabel, gbc);
         
         gbc.gridx = 1;
+        gbc.gridwidth = 3;
         gbc.weightx = 0.9;
         
         add(verifyInput, gbc);
@@ -109,7 +112,8 @@ public class InputPanel extends JPanel {
         for(ActionListener actionListener : textInput.getActionListeners())
             textInput.removeActionListener(actionListener);
         
-        textInput.addActionListener(e -> choiceFile());
+        if(!textMode)
+            textInput.addActionListener(e -> choiceFile());
     }
 
     /**
@@ -129,4 +133,9 @@ public class InputPanel extends JPanel {
         }
     }
 
+    public void clearFields() {
+        textInput.setText("");
+        verifyInput.setText("");
+    }
+    
 }
