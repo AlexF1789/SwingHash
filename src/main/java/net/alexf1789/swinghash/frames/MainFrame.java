@@ -2,27 +2,20 @@ package net.alexf1789.swinghash.frames;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.HeadlessException;
 import java.awt.Insets;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-
-import com.formdev.flatlaf.FlatDarculaLaf;
 
 import net.alexf1789.swinghash.panels.InputPanel;
 import net.alexf1789.swinghash.panels.MenuBar;
+import net.alexf1789.swinghash.panels.OutputPanel;
 
 /**
  * Main frame containing the input, verify and output panels and used by the user
@@ -32,6 +25,7 @@ public class MainFrame extends JFrame {
     
     private Set<String> algorithms;
     private InputPanel inputPanel;
+    private OutputPanel outputPanel;
 
     public MainFrame() {
         // let's set the core settings of the frame
@@ -42,6 +36,7 @@ public class MainFrame extends JFrame {
         createMenuBar();
         
         inputPanel = new InputPanel(true);
+        outputPanel = new OutputPanel(algorithms);
         
         // let's set the layout settings
         setLayout(new GridBagLayout());
@@ -50,13 +45,38 @@ public class MainFrame extends JFrame {
         gbc.insets = new Insets(15, 15, 15, 15);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
-        // let's add the components to the frame
+        // let's add the input panel
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.gridwidth = 4;
         gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
+        gbc.weighty = 0.45;
         
         add(inputPanel, gbc);
+        
+        // let's add the output panel
+        gbc.gridy++;
+        add(outputPanel, gbc);
+        
+        // let's add the buttons
+        JButton clearButton = new JButton("Clear");
+        JButton computeButton = new JButton("Compute");
+        
+        clearButton.addActionListener(event -> {
+            outputPanel.clearFields();
+            inputPanel.clearFields();
+        });
+        
+        gbc.gridx = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weighty = 0.1;
+        gbc.gridwidth = 1;
+        gbc.gridy++;
+        
+        add(clearButton, gbc);
+        
+        gbc.gridx++;        
+        add(computeButton, gbc);
         
         // let's define the size and set the frame as visible
         setSize(500, 500);
