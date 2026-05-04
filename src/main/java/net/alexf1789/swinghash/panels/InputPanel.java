@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -13,6 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.util.SystemFileChooser;
 
 import net.alexf1789.swinghash.models.FileResource;
@@ -85,6 +84,9 @@ public class InputPanel extends JPanel {
         setVisible(true);
     }
     
+    /**
+     * Initialize the components of the panel
+     */
     private void initializeComponents() {
         textInput = new JTextField();
         
@@ -107,7 +109,7 @@ public class InputPanel extends JPanel {
         
         this.textMode = textMode;
         
-        // let's empty the textfield content
+        // let's empty the text field content
         textInput.setText("");
         
         // let's define the tooltip text and add it
@@ -133,6 +135,9 @@ public class InputPanel extends JPanel {
         return textMode ? new StringResource(content) : new FileResource(content);
     }
     
+    /**
+     * Shows the file chooser input and, if confirmed adds it as a path in the input field
+     */
     private void choiceFile() {
         // let's show the file and check if the user pressed the OK button
         if(fileChooser.showOpenDialog(this) == SystemFileChooser.APPROVE_OPTION) {
@@ -140,11 +145,21 @@ public class InputPanel extends JPanel {
         }
     }
 
+    /**
+     * Clears the fields and resets the eventual highlighting of the verify field
+     */
     public void clearFields() {
         textInput.setText("");
         verifyInput.setText("");
+
+        verifyInput.putClientProperty(FlatClientProperties.OUTLINE, null);
     }
     
+    /**
+     * Returns the expected hash, meaning the one contained in the verify text input field
+     * 
+     * @return a String representing the hash the user expects, eventually null if none
+     */
     public String getExpectedHash() {
         String expectedHash = this.verifyInput.getText();
         
@@ -154,12 +169,18 @@ public class InputPanel extends JPanel {
         return expectedHash;
     }
     
+    /**
+     * Updates the verify hash field to have a green border according to its being considered correct
+     */
     public void updateHashCorrect() {
-        this.verifyInput.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+        verifyInput.putClientProperty(FlatClientProperties.OUTLINE, FlatClientProperties.OUTLINE_SUCCESS);
     }
     
+    /**
+     * Updates the verify hash field to have a red border according to its being considered wrong
+     */
     public void updateHashWrong() {
-        this.verifyInput.setBorder(BorderFactory.createLineBorder(Color.RED));
+        verifyInput.putClientProperty(FlatClientProperties.OUTLINE, FlatClientProperties.OUTLINE_ERROR);
     }
     
 }

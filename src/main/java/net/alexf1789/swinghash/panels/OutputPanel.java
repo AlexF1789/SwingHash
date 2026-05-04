@@ -14,6 +14,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.formdev.flatlaf.FlatClientProperties;
+
 import net.alexf1789.swinghash.services.Hash;
 import net.alexf1789.swinghash.services.Hasher;
 
@@ -80,6 +82,7 @@ public class OutputPanel extends JPanel {
         hashes.values().parallelStream()
             .forEach(textField -> {
                 textField.setText("");
+                textField.putClientProperty(FlatClientProperties.OUTLINE, null);
             });
     }
     
@@ -102,7 +105,7 @@ public class OutputPanel extends JPanel {
         JTextField correctHash = this.hashes.get(algorithm);
         
         if(correctHash != null)
-            correctHash.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+            correctHash.putClientProperty(FlatClientProperties.OUTLINE, FlatClientProperties.OUTLINE_SUCCESS);
     }
     
 }

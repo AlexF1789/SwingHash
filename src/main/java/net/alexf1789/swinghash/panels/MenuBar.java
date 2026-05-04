@@ -2,8 +2,10 @@ package net.alexf1789.swinghash.panels;
 
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -42,15 +44,17 @@ public class MenuBar {
      * 
      * @param name is the submenu name
      * @param mnemonic is the mnemonic characted (null for none)
+     * @param addToMain specifies if the submenu has to be added in the root level of MenuBar
      * @return the MenuBar itself to allow a fluent design
      */
-    public MenuBar withSubMenu(String name, Character mnemonic) {
+    public MenuBar withSubMenu(String name, Character mnemonic, boolean addToMain) {
         JMenu submenu = new JMenu(name);
         
         if(mnemonic != null)
             submenu.setMnemonic(mnemonic);
         
-        menuBar.add(submenu);
+        if(addToMain)
+            menuBar.add(submenu);
         items.addFirst(submenu);
         
         return this;
