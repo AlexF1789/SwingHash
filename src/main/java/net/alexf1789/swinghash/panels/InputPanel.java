@@ -1,5 +1,6 @@
 package net.alexf1789.swinghash.panels;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -142,6 +143,23 @@ public class InputPanel extends JPanel {
     public void clearFields() {
         textInput.setText("");
         verifyInput.setText("");
+    }
+    
+    public String getExpectedHash() {
+        String expectedHash = this.verifyInput.getText();
+        
+        if(expectedHash.isEmpty())
+            return null;
+        
+        return expectedHash;
+    }
+    
+    public void updateHashCorrect() {
+        this.verifyInput.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+    }
+    
+    public void updateHashWrong() {
+        this.verifyInput.setBorder(BorderFactory.createLineBorder(Color.RED));
     }
     
 }

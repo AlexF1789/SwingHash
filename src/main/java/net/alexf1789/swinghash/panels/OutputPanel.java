@@ -1,5 +1,6 @@
 package net.alexf1789.swinghash.panels;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -12,6 +13,9 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import net.alexf1789.swinghash.services.Hash;
+import net.alexf1789.swinghash.services.Hasher;
 
 /**
  * Panel which contains the output results of the hash computation with a line for each
@@ -29,7 +33,7 @@ public class OutputPanel extends JPanel {
             JTextField textField = new JTextField();
             
             textField.setToolTipText(hash);
-            textField.setEnabled(false);
+            //textField.setEnabled(false);
             
             this.hashes.put(hash, textField);
         }
@@ -74,7 +78,31 @@ public class OutputPanel extends JPanel {
      */
     public void clearFields() {
         hashes.values().parallelStream()
-            .forEach(textField -> textField.setText(""));
+            .forEach(textField -> {
+                textField.setText("");
+            });
+    }
+    
+    /**
+     * Updates the panel with the computed hashes
+     * 
+     * @param hasher is the Hasher service instance corresponding to the current input
+     * @throws InterruptedException if the process is interrupted while the hashes are being computed
+     */
+    public void updateResults(Hasher hasher) throws InterruptedException {
+        for(Entry<String, String> hash : hasher.getHashesResult().entrySet()) {
+            JTextField textField = this.hashes.get(hash.getKey());
+            
+            if(textField != null)
+                textField.setText(hash.getValue());
+        }
+    }
+    
+    public void setCorrect(String algorithm) {
+        JTextField correctHash = this.hashes.get(algorithm);
+        
+        if(correctHash != null)
+            correctHash.setBorder(BorderFactory.createLineBorder(Color.GREEN));
     }
     
 }

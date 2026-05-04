@@ -130,6 +130,19 @@ public class MainFrame extends JFrame {
     private void computeHashes() throws InterruptedException {
         Hasher hasher = new Hasher(algorithms, inputPanel.getResource());
         hasher.compute();
+        
+        outputPanel.updateResults(hasher);
+        
+        String expectedHash = inputPanel.getExpectedHash();
+        if(expectedHash == null)
+            return;
+        
+        String correctAlgo = hasher.validate(expectedHash);
+        if(correctAlgo != null) {
+            outputPanel.setCorrect(correctAlgo);
+            inputPanel.updateHashCorrect();
+        } else
+            inputPanel.updateHashWrong();
     }
     
 }

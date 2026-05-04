@@ -3,8 +3,10 @@ package net.alexf1789.swinghash.services;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import net.alexf1789.swinghash.models.Resource;
@@ -56,7 +58,7 @@ public class Hasher {
      * @return a Map associating each hash to the relative result
      * @throws InterruptedException if the process is interrupted while threads are still working during the hash computation
      */
-    public Map<String, String> getHashes() throws InterruptedException {
+    public Map<String, String> getHashesResult() throws InterruptedException {
         // let's check if the hashes have been computed
         if(!this.computed)
             compute();
@@ -67,6 +69,13 @@ public class Hasher {
                                 Entry::getKey, 
                                 entry -> entry.getValue().getHash()
                         ));
+    }
+    
+    public Map<String, Hash> getHashes() throws InterruptedException {
+        if(!this.computed)
+            compute();
+        
+        return this.hashes;
     }
     
     /**
@@ -87,6 +96,21 @@ public class Hasher {
     public void recompute() throws InterruptedException {
         this.computed = false;
         compute();
+    }
+    
+    /**
+     * Validates the passed hash with the computed ones
+     * 
+     * @param hash is the expected hash
+     * @return a String representing the algorithm matching the hash, or null if none
+     * @throws InterruptedException if the process is interrupted while threads are still working
+     */
+    public String validate(String hash) throws InterruptedException {
+        return this.getHashes().values().parallelStream()
+            .filter(computedHash -> computedHash.getHash().equals(hash))
+            .map(computedHash -> computedHash.getAlgorithm())
+            .findAny()
+            .orElse(null);
     }
     
 }
