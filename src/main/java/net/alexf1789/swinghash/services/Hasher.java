@@ -1,8 +1,8 @@
 package net.alexf1789.swinghash.services;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -15,7 +15,7 @@ public class Hasher {
     private Map<String, Hash> hashes;
     private boolean computed;
     
-    public Hasher(List<String> algorithms, Resource resource) {
+    public Hasher(Collection<String> algorithms, Resource resource) {
         this.computed = false;
         this.resource = resource;
         this.hashes = new HashMap<String, Hash>(algorithms.size());

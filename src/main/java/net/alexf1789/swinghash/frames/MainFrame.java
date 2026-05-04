@@ -16,6 +16,7 @@ import javax.swing.SwingUtilities;
 import net.alexf1789.swinghash.panels.InputPanel;
 import net.alexf1789.swinghash.panels.MenuBar;
 import net.alexf1789.swinghash.panels.OutputPanel;
+import net.alexf1789.swinghash.services.Hasher;
 
 /**
  * Main frame containing the input, verify and output panels and used by the user
@@ -67,6 +68,15 @@ public class MainFrame extends JFrame {
             inputPanel.clearFields();
         });
         
+        computeButton.addActionListener(event -> {
+            try {
+                computeHashes();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        });
+        
         gbc.gridx = 2;
         gbc.fill = GridBagConstraints.NONE;
         gbc.weighty = 0.1;
@@ -93,9 +103,6 @@ public class MainFrame extends JFrame {
     
     private void createMenuBar() {
         JMenuBar menuBar = new MenuBar()
-                .withSubMenu("File", 'F')
-                    .with(new JCheckBoxMenuItem("MD5", algorithms.contains("MD5")))
-                    .done()
                 .withSubMenu("View", 'V')
                     .with(new JMenuItem("File"))
                         .performingAction(e -> setToFileMode())
@@ -118,6 +125,11 @@ public class MainFrame extends JFrame {
     
     private void setToFileMode() {
         inputPanel.updateSelectionMode(false);        
+    }
+    
+    private void computeHashes() throws InterruptedException {
+        Hasher hasher = new Hasher(algorithms, inputPanel.getResource());
+        hasher.compute();
     }
     
 }

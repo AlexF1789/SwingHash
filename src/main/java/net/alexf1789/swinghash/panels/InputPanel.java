@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -26,6 +27,7 @@ public class InputPanel extends JPanel {
     private JTextField textInput, verifyInput;
     private JLabel inputLabel, verifyLabel;
     private SystemFileChooser fileChooser;
+    private JButton chooseFileButton;
     private boolean textMode;
     
     public InputPanel(boolean textMode) {
@@ -54,10 +56,15 @@ public class InputPanel extends JPanel {
         add(inputLabel, gbc);
         
         gbc.gridx = 1;
-        gbc.gridwidth = 3;
-        gbc.weightx = 0.9;
+        gbc.gridwidth = 2;
+        gbc.weightx = 0.8;
         
         add(textInput, gbc);
+        
+        gbc.gridx = 3;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.1;
+        add(chooseFileButton, gbc);
         
         // verify label and field
         gbc.gridx = 0;
@@ -84,6 +91,9 @@ public class InputPanel extends JPanel {
         fileChooser.setMultiSelectionEnabled(false);
         
         inputLabel = new JLabel();
+        
+        chooseFileButton = new JButton("Choose...");
+        chooseFileButton.addActionListener(event -> choiceFile());
     }
     
     /**
@@ -108,12 +118,8 @@ public class InputPanel extends JPanel {
         // let's update the border
         setBorder(BorderFactory.createTitledBorder(textMode ? "Hash a text" : "Hash a file"));
         
-        // let's add the click event to the text field
-        for(ActionListener actionListener : textInput.getActionListeners())
-            textInput.removeActionListener(actionListener);
-        
-        if(!textMode)
-            textInput.addActionListener(e -> choiceFile());
+        // let's create the choice file button
+        this.chooseFileButton.setVisible(!textMode);
     }
 
     /**
