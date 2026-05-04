@@ -13,6 +13,9 @@ The graphical interface is modern and slick. It's offered in both the light and 
 
 The program contains a menu bar created with a fluent approach which allows the user to perform all the basic operations.
 
+<img width="300" alt="light" src="https://github.com/user-attachments/assets/584c6d77-e63a-4678-aa63-3ee0f03ef2a3" />
+<img width="300" alt="immagine" src="https://github.com/user-attachments/assets/0878b6e5-9193-44ac-a3b8-8c8c4b995174" />
+
 ## Development interest
 So far the idea for the program development is to extend the hashing algorithms to all the ones supported by the MessageDigest class. The structure itself is already made to be as modular as possible.
 
