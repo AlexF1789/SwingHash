@@ -24,6 +24,7 @@ import net.alexf1789.swinghash.panels.InputPanel;
 import net.alexf1789.swinghash.panels.MenuBar;
 import net.alexf1789.swinghash.panels.OutputPanel;
 import net.alexf1789.swinghash.services.Hasher;
+import net.alexf1789.swinghash.services.Settings;
 
 /**
  * Main frame containing the input, verify and output panels and used by the user
@@ -31,21 +32,22 @@ import net.alexf1789.swinghash.services.Hasher;
  */
 public class MainFrame extends JFrame {
     
-    private Set<String> algorithms;
     private InputPanel inputPanel;
     private OutputPanel outputPanel;
+    private Settings settings;
 
-    public MainFrame() {
+    public MainFrame(Settings settings) {
+        this.settings = settings;
+        
         // let's set the core settings of the frame
         setTitle("SwingHash");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setApplicationIcon();
         
-        defineBaseAlgorithms();
         createMenuBar();
         
         inputPanel = new InputPanel(true);
-        outputPanel = new OutputPanel(algorithms);
+        outputPanel = new OutputPanel(settings.getAlgorithms());
         
         // let's set the layout settings
         setLayout(new GridBagLayout());
@@ -85,20 +87,12 @@ public class MainFrame extends JFrame {
         gbc.gridx++;        
         add(computeButton, gbc);
         
+        // let's save the settings before closing
+        // TODO
+        
         // let's define the size and set the frame as visible
         setSize(500, 500);
         setVisible(true);
-    }
-    
-    /**
-     * Defines the algorithms the hash will be computed by
-     */
-    private void defineBaseAlgorithms() {
-        algorithms = new HashSet<String>(5);
-        
-        algorithms.add("MD5");
-        algorithms.add("SHA-256");
-        algorithms.add("SHA-512");
     }
     
     /**
@@ -125,12 +119,14 @@ public class MainFrame extends JFrame {
                             .performingAction(e -> {
                                 FlatDarculaLaf.setup();
                                 FlatLaf.updateUI();
+                                settings.setDarkTheme(true);
                             })
                         .done()
                         .with(new JMenuItem("Light"))
                             .performingAction(e -> {
                                 FlatLightLaf.setup();
                                 FlatLaf.updateUI();
+                                settings.setDarkTheme(false);
                             })
                         .done()
                     .done()
@@ -174,7 +170,7 @@ public class MainFrame extends JFrame {
     private void computeHashes() {
         try {
 
-            Hasher hasher = new Hasher(algorithms, inputPanel.getResource());
+            Hasher hasher = new Hasher(settings.getAlgorithms(), inputPanel.getResource());
             hasher.compute();
             
             outputPanel.updateResults(hasher);
