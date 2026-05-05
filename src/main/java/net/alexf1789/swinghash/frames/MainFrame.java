@@ -3,11 +3,12 @@ package net.alexf1789.swinghash.frames;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -17,8 +18,8 @@ import javax.swing.SwingUtilities;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.icons.FlatAnimatedIcon;
 
+import net.alexf1789.swinghash.Main;
 import net.alexf1789.swinghash.panels.InputPanel;
 import net.alexf1789.swinghash.panels.MenuBar;
 import net.alexf1789.swinghash.panels.OutputPanel;
@@ -38,6 +39,7 @@ public class MainFrame extends JFrame {
         // let's set the core settings of the frame
         setTitle("SwingHash");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setApplicationIcon();
         
         defineBaseAlgorithms();
         createMenuBar();
@@ -191,6 +193,19 @@ public class MainFrame extends JFrame {
         } catch(Exception e) {
             JOptionPane.showMessageDialog(this, "The hashes could not be computed due to the following error: "+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+    
+    /**
+     * Sets the application icon in the system trail
+     */
+    private void setApplicationIcon() {
+        URL iconUrl = this.getClass().getResource(Main.ICON_PATH);
+        
+        if(iconUrl == null)
+            return;
+        
+        ImageIcon icon = new ImageIcon(iconUrl);
+        setIconImage(icon.getImage());
     }
     
 }
