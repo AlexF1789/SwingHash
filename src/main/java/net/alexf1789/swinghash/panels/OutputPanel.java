@@ -1,6 +1,5 @@
 package net.alexf1789.swinghash.panels;
 
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -16,7 +15,6 @@ import javax.swing.JTextField;
 
 import com.formdev.flatlaf.FlatClientProperties;
 
-import net.alexf1789.swinghash.services.Hash;
 import net.alexf1789.swinghash.services.Hasher;
 
 /**
@@ -101,11 +99,49 @@ public class OutputPanel extends JPanel {
         }
     }
     
-    public void setCorrect(String algorithm) {
+    /**
+     * Sets a text field representing a computed hash as correct
+     * 
+     * @param algorithm is the algorithm corresponding to the correct hash
+     * @return true if the algorithm was found and the text field highlighted, false otherwise
+     */
+    public boolean setCorrect(String algorithm) {
         JTextField correctHash = this.hashes.get(algorithm);
         
-        if(correctHash != null)
-            correctHash.putClientProperty(FlatClientProperties.OUTLINE, FlatClientProperties.OUTLINE_SUCCESS);
+        if(correctHash == null)
+            return false;
+        
+        correctHash.putClientProperty(FlatClientProperties.OUTLINE, FlatClientProperties.OUTLINE_SUCCESS);
+        return true;
+    }
+    
+    /**
+     * Restores an Hasher from the history into the text fields
+     * 
+     * @param hasher is the Hasher to restore
+     */
+    public void restoreFromHistory(Hasher hasher) {
+        // let's check if the hasher exists
+        if(hasher == null)
+            return;
+        
+        // let's fetch the results from the previous hash
+        Map<String, String> computedHashes;
+        
+        try {
+            computedHashes = hasher.getHashesResult();            
+        } catch (Exception e) {
+            return;
+        }
+        
+        // let's populate the correct text fields
+        computedHashes.entrySet().parallelStream()
+            .forEach(entry -> {
+                JTextField textField = hashes.get(entry.getKey());
+                
+                if(textField != null)
+                    textField.setText(entry.getValue());
+            });
     }
     
 }

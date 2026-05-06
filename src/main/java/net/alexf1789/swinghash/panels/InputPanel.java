@@ -17,6 +17,7 @@ import com.formdev.flatlaf.util.SystemFileChooser;
 import net.alexf1789.swinghash.models.FileResource;
 import net.alexf1789.swinghash.models.Resource;
 import net.alexf1789.swinghash.models.StringResource;
+import net.alexf1789.swinghash.services.Hasher;
 
 /**
  * Input panel containing the logic to determine the resource type to hash and the verify
@@ -124,6 +125,13 @@ public class InputPanel extends JPanel {
         // let's create the choice file button
         this.chooseFileButton.setVisible(!textMode);
     }
+    
+    /**
+     * Switches the selection mode to the opposite one
+     */
+    public void updateSelectionMode() {
+        updateSelectionMode(!textMode);
+    }
 
     /**
      * Returns the input resource specified in the panel
@@ -149,9 +157,13 @@ public class InputPanel extends JPanel {
      * Clears the fields and resets the eventual highlighting of the verify field
      */
     public void clearFields() {
+        // let's clear the text contained in the text fields and the optional
+        // tooltip added in case of chronology restore
         textInput.setText("");
         verifyInput.setText("");
+        verifyInput.setToolTipText("");
 
+        // let's remove the FlatLaf success/error/warning border
         verifyInput.putClientProperty(FlatClientProperties.OUTLINE, null);
     }
     
@@ -181,6 +193,40 @@ public class InputPanel extends JPanel {
      */
     public void updateHashWrong() {
         verifyInput.putClientProperty(FlatClientProperties.OUTLINE, FlatClientProperties.OUTLINE_ERROR);
+    }
+    
+    /**
+     * Updates the verify hash field to have an orange border according to its being considered
+     * correct but not shown in the output panel
+     */
+    public void updateHashWarning(String correctAlgoName) {
+        verifyInput.putClientProperty(FlatClientProperties.OUTLINE, FlatClientProperties.OUTLINE_WARNING);
+        verifyInput.setToolTipText("The correct algorithm is " + correctAlgoName);
+    }
+    
+    /**
+     * Restores an Hasher from the history into the text fields
+     * 
+     * @param hasher is the Hasher to restore
+     */
+    public void restoreFromHistory(Hasher hasher) {
+        // if we're trying to restore something that doesn't exist
+        // it's better to stop here
+        if(hasher == null)
+            return;
+        
+        // if the resource is the opposite as the current input mode let's switch it
+        // to the correct one
+        if(textMode != hasher.isFileResource())
+            updateSelectionMode();
+        
+        // let's set the text fields content
+        this.textInput.setText(hasher.getResource().getResource());
+        
+        if(hasher.getExpectedHash() != null)
+            this.verifyInput.setText(hasher.getExpectedHash());
+        else
+            this.verifyInput.setText("");
     }
     
 }

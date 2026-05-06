@@ -1,8 +1,12 @@
 package net.alexf1789.swinghash.frames;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
@@ -46,7 +51,7 @@ public class MainFrame extends JFrame {
         
         createMenuBar();
         
-        inputPanel = new InputPanel(true);
+        inputPanel = new InputPanel(settings.isTextMode());
         outputPanel = new OutputPanel(settings.getAlgorithms());
         
         // let's set the layout settings
@@ -88,10 +93,24 @@ public class MainFrame extends JFrame {
         add(computeButton, gbc);
         
         // let's save the settings before closing
-        // TODO
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+                settings.save();
+            }
+            
+            @Override
+            public void windowClosing(WindowEvent e) {
+                settings.save();
+            }
+        });
         
         // let's define the size and set the frame as visible
-        setSize(500, 500);
+        pack();
+        Dimension currentSize = getSize();
+        currentSize.width = 500;
+        
+        setSize(currentSize);
         setVisible(true);
     }
     
@@ -106,6 +125,12 @@ public class MainFrame extends JFrame {
                     .done()
                     .with(new JMenuItem("Clear"))
                         .performingAction(e -> clear())
+                    .done()
+                    .with(new JMenuItem("Restore last"))
+                        .performingAction(e -> restoreLastHash())
+                    .done()
+                    .with(new JMenuItem("Settings"))
+                        .performingAction(e -> SwingUtilities.invokeLater(() -> new SettingsFrame(settings)))
                     .done()
                 .withSubMenu("View", 'V', true)
                     .with(new JMenuItem("File mode"))
@@ -145,6 +170,7 @@ public class MainFrame extends JFrame {
      */
     private void setToTextMode() {
         inputPanel.updateSelectionMode(true);
+        settings.setTextMode(true);
     }
     
     /**
@@ -152,7 +178,8 @@ public class MainFrame extends JFrame {
      * will be produced is a FileResource
      */
     private void setToFileMode() {
-        inputPanel.updateSelectionMode(false);        
+        inputPanel.updateSelectionMode(false);
+        settings.setTextMode(false);
     }
     
     /**
@@ -169,17 +196,21 @@ public class MainFrame extends JFrame {
      */
     private void computeHashes() {
         try {
-
-            Hasher hasher = new Hasher(settings.getAlgorithms(), inputPanel.getResource());
+            // let's create the hasher instance and compute the hashes in an explicit way
+            Hasher hasher = new Hasher(settings.getAlgorithms(), inputPanel.getResource(), inputPanel.getExpectedHash());
             hasher.compute();
             
+            // let's update the output panel and the chronology
             outputPanel.updateResults(hasher);
+            settings.addToHistory(hasher);
             
-            String expectedHash = inputPanel.getExpectedHash();
-            if(expectedHash == null)
+            // if hasher has not expected hash let's return immediately
+            if(!hasher.hasExpectedHash())
                 return;
             
-            String correctAlgo = hasher.validate(expectedHash);
+            // let's validate the input according to its being correct
+            // in respect to the computed hashes
+            String correctAlgo = hasher.validate();
             if(correctAlgo != null) {
                 outputPanel.setCorrect(correctAlgo);
                 inputPanel.updateHashCorrect();
@@ -202,6 +233,59 @@ public class MainFrame extends JFrame {
         
         ImageIcon icon = new ImageIcon(iconUrl);
         setIconImage(icon.getImage());
+    }
+    
+    /**
+     * Restores the last hash computed view in the application
+     */
+    private void restoreLastHash() {
+        Hasher lastHash = settings.getLastHashComputed();
+        
+        // if there is no hash let's not do anything
+        if(lastHash == null)
+            return;
+        
+        // let's restore the state of input and output panel
+        inputPanel.restoreFromHistory(lastHash);
+        outputPanel.restoreFromHistory(lastHash);
+        
+        // let's highlight the correct hash or wrong input
+        String correctAlgo;
+        try {
+            correctAlgo = lastHash.validate();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(
+                        this,
+                        "There was an error restoring the last computed hash from the chronology",
+                        "Error",
+                        JOptionPane.ERROR
+                    );
+            
+            clear();
+            return;
+        }
+        
+        // if the correct algorithm was not found let's show it in the input
+        if(correctAlgo == null) {
+            inputPanel.updateHashWrong();
+            return;
+        }
+        
+        // if we can highlight the algorithm let's put it in green
+        if(outputPanel.setCorrect(correctAlgo)) {
+            inputPanel.updateHashCorrect();
+            return;
+        }
+        
+        // otherwise let's show an error and highlight in orange the input with a tooltip
+        inputPanel.updateHashWarning(correctAlgo);
+        JOptionPane.showMessageDialog(
+                    this,
+                    String.format("The hash was previously found correct with the algorithm %s but it's not shown in this output panel configuation", correctAlgo),
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE                    
+                );
+        
     }
     
 }

@@ -9,17 +9,23 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import net.alexf1789.swinghash.models.FileResource;
 import net.alexf1789.swinghash.models.Resource;
+import net.alexf1789.swinghash.models.StringResource;
 
 public class Hasher {
 
     private Resource resource;
+    private String expectedHash;
     private Map<String, Hash> hashes;
     private boolean computed;
+    private boolean resourceIsFile;
     
-    public Hasher(Collection<String> algorithms, Resource resource) {
+    public Hasher(Collection<String> algorithms, Resource resource, String expectedHash) {
         this.computed = false;
         this.resource = resource;
+        this.resourceIsFile = resource instanceof FileResource;
+        this.expectedHash = (expectedHash != null && expectedHash.isEmpty()) ? null : expectedHash;
         this.hashes = new HashMap<String, Hash>(algorithms.size());
         
         for(String algorithm : algorithms) {
@@ -27,8 +33,8 @@ public class Hasher {
         }
     }
     
-    public Hasher(String[] algorithms, Resource resource) {
-        this(Arrays.asList(algorithms), resource);
+    public Hasher(String[] algorithms, Resource resource, String expectedHash) {
+        this(Arrays.asList(algorithms), resource, expectedHash);
     }
     
     /**
@@ -105,12 +111,43 @@ public class Hasher {
      * @return a String representing the algorithm matching the hash, or null if none
      * @throws InterruptedException if the process is interrupted while threads are still working
      */
-    public String validate(String hash) throws InterruptedException {
+    public String validate() throws InterruptedException {
         return this.getHashes().values().parallelStream()
-            .filter(computedHash -> computedHash.getHash().equals(hash))
+            .filter(computedHash -> computedHash.getHash().equals(expectedHash))
             .map(computedHash -> computedHash.getAlgorithm())
             .findAny()
             .orElse(null);
+    }
+    
+    /**
+     * Indicates if the resource is a File
+     * 
+     * @return a boolean which is true if the resource is a file, false if it's a String
+     */
+    public boolean isFileResource() {
+        return resourceIsFile;
+    }
+    
+    /**
+     * Returns the Resource the Hasher has been initialized on
+     * 
+     * @return the Resource the hash will be computed on
+     */
+    public Resource getResource() {
+        return resource;
+    }
+    
+    public String getExpectedHash() {
+        return expectedHash;
+    }
+    
+    /**
+     * Indicates if the user provided an expected hash for the resource
+     * 
+     * @return true if the user did, false otherwise
+     */
+    public boolean hasExpectedHash() {
+        return expectedHash != null;
     }
     
 }
