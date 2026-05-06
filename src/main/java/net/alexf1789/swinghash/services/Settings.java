@@ -19,12 +19,23 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+
+import net.alexf1789.swinghash.models.HistoryHash;
 
 public class Settings {
     
+    @Expose
     private boolean darkTheme, textMode, disableHistory;
+    
+    @Expose
     private Set<String> algorithms;
-    private LinkedList<Hasher> history;
+    
+    @Expose
+    private LinkedList<HistoryHash> history;
+    
+    @Expose
     private int historySize;
     
     private static Settings settings;
@@ -143,13 +154,14 @@ public class Settings {
      * not fitting anymore according to the specified size
      * 
      * @param hash is the Hash to add to the history
+     * @throws InterruptedException 
      */
-    public void addToHistory(Hasher hash) {
+    public void addToHistory(Hasher hash) throws InterruptedException {
         // let's check if the history is disabled or not
         if(disableHistory)
             return;
         
-        history.addFirst(hash);
+        history.addFirst(new HistoryHash(hash));
         
         // let's check if the history size is not greater to the
         // wanted one
@@ -160,9 +172,9 @@ public class Settings {
     /**
      * Returns the last hash that was computed by the user
      * 
-     * @return an Hasher or null if none
+     * @return an HistoryHash or null if none
      */
-    public Hasher getLastHashComputed() {
+    public HistoryHash getLastHashComputed() {
         // if the history is disabled we're not even trying to recover it
         if(disableHistory)
             return null;

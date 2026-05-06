@@ -2,7 +2,10 @@ package net.alexf1789.swinghash.services;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+
+import com.google.gson.annotations.Expose;
 
 import net.alexf1789.swinghash.models.Resource;
 import net.alexf1789.swinghash.models.StringResource;
@@ -25,8 +28,8 @@ public class Hash extends Thread {
             
             // let's compute the digest in both cases of interest
             if(resource instanceof StringResource) {
-                byte[] inputString = resource.getResource().getBytes();
-                messageDigest.digest(inputString);
+                byte[] inputString = resource.getResource().getBytes(StandardCharsets.UTF_8);
+                messageDigest.update(inputString);
             } else {
                 byte[] readBuffer = new byte[8092];
                 int count = 0;

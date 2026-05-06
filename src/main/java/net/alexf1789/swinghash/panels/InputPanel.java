@@ -10,11 +10,14 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.util.SystemFileChooser;
 
 import net.alexf1789.swinghash.models.FileResource;
+import net.alexf1789.swinghash.models.HistoryHash;
 import net.alexf1789.swinghash.models.Resource;
 import net.alexf1789.swinghash.models.StringResource;
 import net.alexf1789.swinghash.services.Hasher;
@@ -207,9 +210,9 @@ public class InputPanel extends JPanel {
     /**
      * Restores an Hasher from the history into the text fields
      * 
-     * @param hasher is the Hasher to restore
+     * @param hasher is the HistoryHash to restore
      */
-    public void restoreFromHistory(Hasher hasher) {
+    public void restoreFromHistory(HistoryHash hasher) {
         // if we're trying to restore something that doesn't exist
         // it's better to stop here
         if(hasher == null)
@@ -217,14 +220,14 @@ public class InputPanel extends JPanel {
         
         // if the resource is the opposite as the current input mode let's switch it
         // to the correct one
-        if(textMode != hasher.isFileResource())
+        if(textMode == hasher.resourceIsFile())
             updateSelectionMode();
         
         // let's set the text fields content
-        this.textInput.setText(hasher.getResource().getResource());
+        this.textInput.setText(hasher.getResource());
         
-        if(hasher.getExpectedHash() != null)
-            this.verifyInput.setText(hasher.getExpectedHash());
+        if(hasher.getExpected() != null)
+            this.verifyInput.setText(hasher.getExpected());
         else
             this.verifyInput.setText("");
     }

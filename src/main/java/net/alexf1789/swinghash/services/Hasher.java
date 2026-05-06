@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.gson.annotations.Expose;
+
 import net.alexf1789.swinghash.models.FileResource;
 import net.alexf1789.swinghash.models.Resource;
 import net.alexf1789.swinghash.models.StringResource;
@@ -19,12 +21,10 @@ public class Hasher {
     private String expectedHash;
     private Map<String, Hash> hashes;
     private boolean computed;
-    private boolean resourceIsFile;
     
     public Hasher(Collection<String> algorithms, Resource resource, String expectedHash) {
         this.computed = false;
         this.resource = resource;
-        this.resourceIsFile = resource instanceof FileResource;
         this.expectedHash = (expectedHash != null && expectedHash.isEmpty()) ? null : expectedHash;
         this.hashes = new HashMap<String, Hash>(algorithms.size());
         
@@ -125,7 +125,7 @@ public class Hasher {
      * @return a boolean which is true if the resource is a file, false if it's a String
      */
     public boolean isFileResource() {
-        return resourceIsFile;
+        return resource instanceof FileResource;
     }
     
     /**

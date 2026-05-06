@@ -25,6 +25,7 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 
 import net.alexf1789.swinghash.Main;
+import net.alexf1789.swinghash.models.HistoryHash;
 import net.alexf1789.swinghash.panels.InputPanel;
 import net.alexf1789.swinghash.panels.MenuBar;
 import net.alexf1789.swinghash.panels.OutputPanel;
@@ -239,7 +240,7 @@ public class MainFrame extends JFrame {
      * Restores the last hash computed view in the application
      */
     private void restoreLastHash() {
-        Hasher lastHash = settings.getLastHashComputed();
+        HistoryHash lastHash = settings.getLastHashComputed();
         
         // if there is no hash let's not do anything
         if(lastHash == null)
@@ -249,21 +250,11 @@ public class MainFrame extends JFrame {
         inputPanel.restoreFromHistory(lastHash);
         outputPanel.restoreFromHistory(lastHash);
         
-        // let's highlight the correct hash or wrong input
-        String correctAlgo;
-        try {
-            correctAlgo = lastHash.validate();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(
-                        this,
-                        "There was an error restoring the last computed hash from the chronology",
-                        "Error",
-                        JOptionPane.ERROR
-                    );
-            
-            clear();
+        if(lastHash.getExpected() == null)
             return;
-        }
+        
+        // let's highlight the correct hash or wrong input
+        String correctAlgo = lastHash.getCorrectAlgo();
         
         // if the correct algorithm was not found let's show it in the input
         if(correctAlgo == null) {

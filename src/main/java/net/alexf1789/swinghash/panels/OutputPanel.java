@@ -15,6 +15,7 @@ import javax.swing.JTextField;
 
 import com.formdev.flatlaf.FlatClientProperties;
 
+import net.alexf1789.swinghash.models.HistoryHash;
 import net.alexf1789.swinghash.services.Hasher;
 
 /**
@@ -118,24 +119,15 @@ public class OutputPanel extends JPanel {
     /**
      * Restores an Hasher from the history into the text fields
      * 
-     * @param hasher is the Hasher to restore
+     * @param hasher is the HistoryHash to restore
      */
-    public void restoreFromHistory(Hasher hasher) {
+    public void restoreFromHistory(HistoryHash hasher) {
         // let's check if the hasher exists
         if(hasher == null)
             return;
         
-        // let's fetch the results from the previous hash
-        Map<String, String> computedHashes;
-        
-        try {
-            computedHashes = hasher.getHashesResult();            
-        } catch (Exception e) {
-            return;
-        }
-        
         // let's populate the correct text fields
-        computedHashes.entrySet().parallelStream()
+        hasher.getHashes().entrySet().parallelStream()
             .forEach(entry -> {
                 JTextField textField = hashes.get(entry.getKey());
                 
