@@ -1,18 +1,8 @@
 package net.alexf1789.swinghash.panels;
 
+import javax.swing.*;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 
 public class MenuBar {
 

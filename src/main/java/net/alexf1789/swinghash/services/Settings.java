@@ -1,33 +1,25 @@
 package net.alexf1789.swinghash.services;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
+import net.alexf1789.swinghash.models.HistoryHash;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Security;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.Expose;
-
-import net.alexf1789.swinghash.models.HistoryHash;
+import java.util.stream.Collectors;
 
 public class Settings {
+
+    public static final int DEFAULT_HISTORY_SIZE = 5;
     
     @Expose
-    private boolean darkTheme, textMode, disableHistory;
+    private boolean darkTheme, textMode, enableHistory;
     
     @Expose
     private Set<String> algorithms;
@@ -37,23 +29,34 @@ public class Settings {
     
     @Expose
     private int historySize;
-    
+
+    private boolean alreadyFiltered = false;
+
     private static Settings settings;
     
     private Settings() {
         darkTheme = false;
         textMode = true;
-        disableHistory = false;
-        historySize = 5;
-        
-        algorithms = new HashSet<>(3);
+        enableHistory = true;
+        historySize = DEFAULT_HISTORY_SIZE;
+
+        resetAlgorithms();
         history = new LinkedList<>();
-        
-        algorithms.add("SHA-256");
-        algorithms.add("SHA-512");
-        algorithms.add("MD5");
     }
-    
+
+    /**
+     * Resets the current algorithms to the default ones
+     */
+    public void resetAlgorithms() {
+        HashSet<String> algos = new HashSet<>(3);
+
+        algos.add("SHA-256");
+        algos.add("SHA-512");
+        algos.add("MD5");
+
+        algorithms = algos;
+    }
+
     /**
      * Gets or creates a Settings instance
      * 
@@ -87,6 +90,16 @@ public class Settings {
         }
         
         return settings;
+    }
+
+    /**
+     * Reloads the settings from the disk
+     *
+     * @return an instance of Settings
+     */
+    public static Settings reloadSettings() {
+        settings = null;
+        return getSettings();
     }
     
     /**
@@ -129,12 +142,65 @@ public class Settings {
         this.darkTheme = darkTheme;
     }
 
+    /**
+     * Returns the algorithms filtering them the first time the app is loaded
+     *
+     * @return the selected algorithms among the available ones
+     */
     public Set<String> getAlgorithms() {
+        if(!alreadyFiltered) {
+            // the filtering is necessary since the JVM only ensures the SHA-256, SHA-512 and MD5 are implemented for sure
+            Set<String> availableAlgos = getAllAlgorithms();
+
+            algorithms = algorithms.stream()
+                    .filter(availableAlgos::contains)
+                    .collect(Collectors.toSet());
+
+            alreadyFiltered = true;
+        }
+
         return algorithms;
     }
 
+    /**
+     * Indicates wether the algorithm is selected or not
+     *
+     * @param algo is the algorithm to check
+     * @return a boolean indicating whether the algo is selected or not
+     */
+    public boolean isAlgoSelected(String algo) {
+        return algorithms.contains(algo);
+    }
+
+    /**
+     * Selects a new algorithm
+     *
+     * @param algo is the algorithm to add
+     */
+    public void addSelectedAlgo(String algo) {
+        algorithms.add(algo);
+    }
+
+    /**
+     * Removes an algorithm from the selected ones
+     *
+     * @param algo is the algorithm to remove
+     */
+    public void removeSelectedAlgo(String algo) {
+        algorithms.remove(algo);
+    }
+
+    /**
+     * Sets the current algorithms to the provided ones provided they're available on the platform
+     *
+     * @param algorithms are the algorithms to set
+     */
     public void setAlgorithms(Set<String> algorithms) {
-        this.algorithms = algorithms;
+        Set<String> supportedAlgorithms = getAllAlgorithms();
+
+        this.algorithms = algorithms.stream()
+                .filter(supportedAlgorithms::contains)
+                .collect(Collectors.toSet());
     }
 
     public boolean isTextMode() {
@@ -158,7 +224,7 @@ public class Settings {
      */
     public void addToHistory(Hasher hash) throws InterruptedException {
         // let's check if the history is disabled or not
-        if(disableHistory)
+        if(!enableHistory)
             return;
         
         history.addFirst(new HistoryHash(hash));
@@ -176,7 +242,7 @@ public class Settings {
      */
     public HistoryHash getLastHashComputed() {
         // if the history is disabled we're not even trying to recover it
-        if(disableHistory)
+        if(!enableHistory)
             return null;
         
         return history.getFirst();
@@ -187,15 +253,40 @@ public class Settings {
     }
 
     public void setHistorySize(int historySize) {
-        this.historySize = historySize;
+        if(historySize == this.historySize)
+            return;
+
+        if(historySize > 0)
+            this.historySize = historySize;
+        else
+            this.historySize = DEFAULT_HISTORY_SIZE;
+
+        // let's trim the eventual records that go beyond the new size taking them
+        // from the least recent
+        if(history.size() > historySize) {
+            for(int i=0; i<=history.size()-historySize; i++)
+                history.removeLast();
+        }
     }
 
-    public boolean isDisableHistory() {
-        return disableHistory;
+    public boolean isHistoryEnabled() {
+        return enableHistory;
     }
 
-    public void setDisableHistory(boolean disableHistory) {
-        this.disableHistory = disableHistory;
+    public void setHistoryEnabled(boolean historyEnabled) {
+        this.enableHistory = historyEnabled;
+
+        if(!historyEnabled)
+            clearHistory();
+    }
+
+    /**
+     * Returns the available algorithms for the platform
+     *
+     * @return a Set of String in which each of those is a supported algorithm
+     */
+    public static Set<String> getAllAlgorithms() {
+        return Security.getAlgorithms("MessageDigest");
     }
 
 }

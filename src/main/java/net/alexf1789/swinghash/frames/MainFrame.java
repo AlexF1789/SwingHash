@@ -1,29 +1,8 @@
 package net.alexf1789.swinghash.frames;
 
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JSeparator;
-import javax.swing.SwingUtilities;
-
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
-
 import net.alexf1789.swinghash.Main;
 import net.alexf1789.swinghash.models.HistoryHash;
 import net.alexf1789.swinghash.panels.InputPanel;
@@ -31,6 +10,12 @@ import net.alexf1789.swinghash.panels.MenuBar;
 import net.alexf1789.swinghash.panels.OutputPanel;
 import net.alexf1789.swinghash.services.Hasher;
 import net.alexf1789.swinghash.services.Settings;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.net.URL;
 
 /**
  * Main frame containing the input, verify and output panels and used by the user
@@ -131,7 +116,7 @@ public class MainFrame extends JFrame {
                         .performingAction(e -> restoreLastHash())
                     .done()
                     .with(new JMenuItem("Settings"))
-                        .performingAction(e -> SwingUtilities.invokeLater(() -> new SettingsFrame(settings)))
+                        .performingAction(e -> SwingUtilities.invokeLater(() -> new SettingsFrame(settings, this)))
                     .done()
                 .withSubMenu("View", 'V', true)
                     .with(new JMenuItem("File mode"))
@@ -159,6 +144,9 @@ public class MainFrame extends JFrame {
                 .withSubMenu("Help", 'H', true)
                     .with(new JMenuItem("About"))
                         .performingAction(e -> SwingUtilities.invokeLater(AboutFrame::new))
+                    .done()
+                    .with(new JMenuItem("Reload"))
+                        .performingAction(e -> reloadWindow())
                     .done()
                 .getJMenuBar();
         
@@ -277,6 +265,14 @@ public class MainFrame extends JFrame {
                     JOptionPane.WARNING_MESSAGE                    
                 );
         
+    }
+
+    /**
+     * Reloads the main frame by opening a new one and closing this instance
+     */
+    public void reloadWindow() {
+        SwingUtilities.invokeLater(() -> new MainFrame(Settings.reloadSettings()));
+        dispose();
     }
     
 }

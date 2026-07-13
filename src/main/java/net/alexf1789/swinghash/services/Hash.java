@@ -1,14 +1,12 @@
 package net.alexf1789.swinghash.services;
 
+import net.alexf1789.swinghash.models.Resource;
+import net.alexf1789.swinghash.models.StringResource;
+
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-
-import com.google.gson.annotations.Expose;
-
-import net.alexf1789.swinghash.models.Resource;
-import net.alexf1789.swinghash.models.StringResource;
 
 public class Hash extends Thread {
     

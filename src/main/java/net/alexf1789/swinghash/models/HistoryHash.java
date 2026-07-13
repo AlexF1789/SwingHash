@@ -1,8 +1,8 @@
 package net.alexf1789.swinghash.models;
 
-import java.util.Map;
-
 import net.alexf1789.swinghash.services.Hasher;
+
+import java.util.Map;
 
 /**
  * Class containing a previously computed hash, used for chronology

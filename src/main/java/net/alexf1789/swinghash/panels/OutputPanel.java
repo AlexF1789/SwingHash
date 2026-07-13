@@ -1,22 +1,14 @@
 package net.alexf1789.swinghash.panels;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import com.formdev.flatlaf.FlatClientProperties;
-
 import net.alexf1789.swinghash.models.HistoryHash;
 import net.alexf1789.swinghash.services.Hasher;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 /**
  * Panel which contains the output results of the hash computation with a line for each

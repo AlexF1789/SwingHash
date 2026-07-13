@@ -1,19 +1,14 @@
 package net.alexf1789.swinghash.services;
 
+import net.alexf1789.swinghash.models.FileResource;
+import net.alexf1789.swinghash.models.Resource;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.google.gson.annotations.Expose;
-
-import net.alexf1789.swinghash.models.FileResource;
-import net.alexf1789.swinghash.models.Resource;
-import net.alexf1789.swinghash.models.StringResource;
 
 public class Hasher {
 

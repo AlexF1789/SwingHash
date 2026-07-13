@@ -1,26 +1,15 @@
 package net.alexf1789.swinghash.frames;
 
-import java.awt.Desktop;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.io.InputStream;
+import net.alexf1789.swinghash.Main;
+
+import javax.swing.*;
+import java.awt.*;
 import java.net.URI;
 import java.net.URL;
-import java.util.Properties;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
-import net.alexf1789.swinghash.Main;
 
 public class AboutFrame extends JFrame {
     
-    private JLabel title, description, icon, javaVersion, bytecodeVersion;
+    private JLabel title, description, icon, javaVersion;
     private JButton seeGithub, closeButton;
     
     public AboutFrame() {
@@ -105,7 +94,7 @@ public class AboutFrame extends JFrame {
                 JOptionPane.showMessageDialog(
                             this,
                             "An error occurred while trying to open the GitHub repository at "+Main.GITHUB_URL,
-                            "Erorr",
+                            "Error",
                             JOptionPane.ERROR
                         );
             }
@@ -113,7 +102,7 @@ public class AboutFrame extends JFrame {
         
         closeButton.addActionListener(event -> dispose());
         
-        javaVersion = new JLabel(System.getProperty("java.version"), JLabel.LEFT);
+        javaVersion = new JLabel("Java "+System.getProperty("java.version"), JLabel.LEFT);
     }
     
 }

@@ -1,26 +1,14 @@
 package net.alexf1789.swinghash.panels;
 
-import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.util.SystemFileChooser;
-
 import net.alexf1789.swinghash.models.FileResource;
 import net.alexf1789.swinghash.models.HistoryHash;
 import net.alexf1789.swinghash.models.Resource;
 import net.alexf1789.swinghash.models.StringResource;
-import net.alexf1789.swinghash.services.Hasher;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Input panel containing the logic to determine the resource type to hash and the verify
