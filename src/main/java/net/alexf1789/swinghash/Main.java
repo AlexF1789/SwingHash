@@ -15,15 +15,9 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException, InvocationTargetException {
         Settings settings = Settings.getSettings();
-        
-        // let's apply the FlatLaf look and feel to the application
-        if(settings.isDarkTheme())
-            FlatDarkLaf.setup();
-        else
-            FlatLightLaf.setup();
-        
+
         // let's create the main application frame
-        SwingUtilities.invokeAndWait(() -> new MainFrame(settings));
+        SwingUtilities.invokeAndWait(() -> new MainFrame(settings, false));
     }
 
 }

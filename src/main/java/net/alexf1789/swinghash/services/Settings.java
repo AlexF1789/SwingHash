@@ -1,9 +1,14 @@
 package net.alexf1789.swinghash.services;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
+import net.alexf1789.swinghash.frames.MainFrame;
 import net.alexf1789.swinghash.models.HistoryHash;
 
+import javax.swing.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +24,7 @@ public class Settings {
     public static final int DEFAULT_HISTORY_SIZE = 5;
     
     @Expose
-    private boolean darkTheme, textMode, enableHistory;
+    private boolean darkTheme, textMode, enableHistory, enableFlatlaf;
     
     @Expose
     private Set<String> algorithms;
@@ -39,6 +44,7 @@ public class Settings {
         textMode = true;
         enableHistory = true;
         historySize = DEFAULT_HISTORY_SIZE;
+        enableFlatlaf = true;
 
         resetAlgorithms();
         history = new LinkedList<>();
@@ -101,7 +107,24 @@ public class Settings {
         settings = null;
         return getSettings();
     }
-    
+
+    /**
+     * Resets the settings to the default ones deleting the previous ones
+     *
+     * @return a new instance of Settings with all the properties
+     *         set to the default values
+     */
+    public static Settings resetSettings() {
+        try {
+            Files.delete(getSavePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        settings = new Settings();
+        return settings;
+    }
+
     /**
      * Saves the current settings in the system
      */
@@ -135,11 +158,12 @@ public class Settings {
     }
     
     public boolean isDarkTheme() {
-        return darkTheme;
+        return enableFlatlaf && darkTheme;
     }
 
     public void setDarkTheme(boolean darkTheme) {
         this.darkTheme = darkTheme;
+        reloadFlatlaf();
     }
 
     /**
@@ -190,19 +214,6 @@ public class Settings {
         algorithms.remove(algo);
     }
 
-    /**
-     * Sets the current algorithms to the provided ones provided they're available on the platform
-     *
-     * @param algorithms are the algorithms to set
-     */
-    public void setAlgorithms(Set<String> algorithms) {
-        Set<String> supportedAlgorithms = getAllAlgorithms();
-
-        this.algorithms = algorithms.stream()
-                .filter(supportedAlgorithms::contains)
-                .collect(Collectors.toSet());
-    }
-
     public boolean isTextMode() {
         return textMode;
     }
@@ -248,10 +259,20 @@ public class Settings {
         return history.getFirst();
     }
 
+    /**
+     * Returns the maximum number of entries saved in the history
+     *
+     * @return the history maximum size
+     */
     public int getHistorySize() {
         return historySize;
     }
 
+    /**
+     * Sets the size for the history, fallbacking on the defualt value of 5
+     *
+     * @param historySize is the history new size
+     */
     public void setHistorySize(int historySize) {
         if(historySize == this.historySize)
             return;
@@ -269,10 +290,20 @@ public class Settings {
         }
     }
 
+    /**
+     * Indicates wether the history is enabled
+     *
+     * @return a boolean indicating so
+     */
     public boolean isHistoryEnabled() {
         return enableHistory;
     }
 
+    /**
+     * Sets the history to the value provided
+     *
+     * @param historyEnabled indicates if the history must be activated or deactivated
+     */
     public void setHistoryEnabled(boolean historyEnabled) {
         this.enableHistory = historyEnabled;
 
@@ -289,4 +320,49 @@ public class Settings {
         return Security.getAlgorithms("MessageDigest");
     }
 
+    /**
+     * Indicates whether the FlatLaf modern theme is enabled
+     *
+     * @return a boolean indicating so
+     */
+    public boolean isFlatlafEnabled() {
+        return enableFlatlaf;
+    }
+
+    /**
+     * Enables or disabled Flatlaf modern theme
+     *
+     * @param enableFlatlaf indicates whether the modern theme
+     *                      has to be activated or deactivated
+     */
+    public void setEnableFlatlaf(boolean enableFlatlaf, MainFrame mainFrame) {
+        this.enableFlatlaf = enableFlatlaf;
+
+        // let's set the look and feel to the default one
+        if(!enableFlatlaf && mainFrame != null) {
+            try {
+                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+                SwingUtilities.updateComponentTreeUI(mainFrame);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if(enableFlatlaf) {
+            reloadFlatlaf();
+        }
+    }
+
+    /**
+     * Reloads flatlaf theme
+     */
+    public void reloadFlatlaf() {
+        if(!enableFlatlaf)
+            return;
+
+        if(darkTheme)
+            FlatDarculaLaf.setup();
+        else
+            FlatLightLaf.setup();
+
+        FlatLaf.updateUI();
+    }
 }

@@ -1,5 +1,8 @@
 package net.alexf1789.swinghash.frames;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import net.alexf1789.swinghash.panels.AlgoComboBox;
 import net.alexf1789.swinghash.services.Settings;
 
@@ -15,6 +18,8 @@ public class SettingsFrame extends JFrame {
     private MainFrame mainFrame;
 
     // inputs
+    private JCheckBox enableFlatlaf;
+    private JCheckBox darkTheme;
     private JCheckBox enableHistory;
     private JTextField historySize;
     private AlgoComboBox algorithms;
@@ -38,7 +43,36 @@ public class SettingsFrame extends JFrame {
         gbc.gridy = 0;
         gbc.weighty = 0;
 
+        // let's add the enable flatlaf checkbox
+        gbc.weightx = 0.1;
+        add(new JLabel("Enable Flatlaf"), gbc);
+
+        gbc.gridx++;
+        gbc.weightx = 0.9;
+        enableFlatlaf = new JCheckBox();
+        enableFlatlaf.addActionListener(e -> toggleFlatlaf());
+
+        add(enableFlatlaf, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.weightx = 0.1;
+
+        add(new JLabel("Dark theme"), gbc);
+
+        gbc.gridx++;
+        gbc.weightx = 0.9;
+        darkTheme = new JCheckBox();
+        darkTheme.addActionListener(e -> {
+            setChanged();
+            settings.setDarkTheme(darkTheme.isSelected());
+        });
+
+        add(darkTheme, gbc);
+
         // let's add the enable history checkbox
+        gbc.gridx = 0;
+        gbc.gridy++;
         gbc.weightx = 0.1;
         add(new JLabel("Enable history"), gbc);
 
@@ -50,7 +84,7 @@ public class SettingsFrame extends JFrame {
 
         // let's add the history size
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy++;
         gbc.weightx = 0.1;
         add(new JLabel("History size"), gbc);
 
@@ -115,6 +149,16 @@ public class SettingsFrame extends JFrame {
 
         pack();
         setVisible(true);
+    }
+
+    /**
+     * Reacts to the change of the flatlaf toggle in the UI
+     */
+    private void toggleFlatlaf() {
+        setChanged();
+
+        darkTheme.setEnabled(enableFlatlaf.isSelected());
+        settings.setEnableFlatlaf(enableFlatlaf.isSelected(), mainFrame);
     }
 
     /**
@@ -194,8 +238,15 @@ public class SettingsFrame extends JFrame {
             setUnchanged();
         }
 
+        // theme
+        enableFlatlaf.setSelected(settings.isFlatlafEnabled());
+        darkTheme.setEnabled(settings.isFlatlafEnabled());
+        darkTheme.setSelected(settings.isDarkTheme());
+
+        // history enabled
         enableHistory.setSelected(settings.isHistoryEnabled());
 
+        // history size
         if(settings.isHistoryEnabled()) {
             historySize.setEnabled(true);
             historySize.setText(String.valueOf(settings.getHistorySize()));

@@ -27,8 +27,9 @@ public class MainFrame extends JFrame {
     private OutputPanel outputPanel;
     private Settings settings;
 
-    public MainFrame(Settings settings) {
+    public MainFrame(Settings settings, boolean reloadLastHash) {
         this.settings = settings;
+        settings.reloadFlatlaf();
         
         // let's set the core settings of the frame
         setTitle("SwingHash");
@@ -98,6 +99,9 @@ public class MainFrame extends JFrame {
         
         setSize(currentSize);
         setVisible(true);
+
+        if(reloadLastHash)
+            restoreLastHash();
     }
     
     /**
@@ -127,18 +131,10 @@ public class MainFrame extends JFrame {
                     .done()
                     .withSubMenu("Theme", 'T', false)
                         .with(new JMenuItem("Dark"))
-                            .performingAction(e -> {
-                                FlatDarculaLaf.setup();
-                                FlatLaf.updateUI();
-                                settings.setDarkTheme(true);
-                            })
+                            .performingAction(e -> settings.setDarkTheme(true))
                         .done()
                         .with(new JMenuItem("Light"))
-                            .performingAction(e -> {
-                                FlatLightLaf.setup();
-                                FlatLaf.updateUI();
-                                settings.setDarkTheme(false);
-                            })
+                            .performingAction(e -> settings.setDarkTheme(false))
                         .done()
                     .done()
                 .withSubMenu("Help", 'H', true)
@@ -203,14 +199,66 @@ public class MainFrame extends JFrame {
             if(correctAlgo != null) {
                 outputPanel.setCorrect(correctAlgo);
                 inputPanel.updateHashCorrect();
-            } else
+
+                // if Flatlaf is not enabled we have to show a notification
+                if(!settings.isFlatlafEnabled())
+                    showCorrectHashNotification(correctAlgo);
+
+            } else {
                 inputPanel.updateHashWrong();
+
+                // if Flatlaf is not enabled we have to show a notification
+                if(!settings.isFlatlafEnabled())
+                    showWrongHashNotification();
+
+            }
             
         } catch(Exception e) {
             JOptionPane.showMessageDialog(this, "The hashes could not be computed due to the following error: "+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
+    /**
+     * Shows the user that the hash computed with the specified algorithm matches the provided one
+     *
+     * @param algo is the algorithm matching the specified one
+     */
+    private void showCorrectHashNotification(String algo) {
+        JOptionPane.showMessageDialog(
+            this,
+            String.format("The hash computed with the algorithm %s matches the specified one!", algo),
+            "Success",
+            JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    /**
+     * Shows the user that none of the computed hashes match the provided one
+     */
+    private void showWrongHashNotification() {
+        JOptionPane.showMessageDialog(
+            this,
+            "No algorithm provided the specified hash!",
+            "Error",
+            JOptionPane.ERROR_MESSAGE
+        );
+    }
+
+    /**
+     * Informs the user that the computed hash matches the provided one, but it's not shown since
+     * settings have changed in the meantime
+     *
+     * @param algo is the algorithm matching the specified hash
+     */
+    private void showNotPresentAlgoNotification(String algo) {
+        JOptionPane.showMessageDialog(
+            this,
+            String.format("The hash computed with the algorithm %s matches the specified one! Anyway it's not shown becase the configuration changed in the meantime", algo),
+            "Warning",
+            JOptionPane.WARNING_MESSAGE
+        );
+    }
+
     /**
      * Sets the application icon in the system trail
      */
@@ -247,31 +295,33 @@ public class MainFrame extends JFrame {
         // if the correct algorithm was not found let's show it in the input
         if(correctAlgo == null) {
             inputPanel.updateHashWrong();
+
+            if(!settings.isFlatlafEnabled())
+                showWrongHashNotification();
+
             return;
         }
         
         // if we can highlight the algorithm let's put it in green
         if(outputPanel.setCorrect(correctAlgo)) {
             inputPanel.updateHashCorrect();
+
+            if(!settings.isFlatlafEnabled())
+                showCorrectHashNotification(correctAlgo);
+
             return;
         }
         
         // otherwise let's show an error and highlight in orange the input with a tooltip
         inputPanel.updateHashWarning(correctAlgo);
-        JOptionPane.showMessageDialog(
-                    this,
-                    String.format("The hash was previously found correct with the algorithm %s but it's not shown in this output panel configuation", correctAlgo),
-                    "Warning",
-                    JOptionPane.WARNING_MESSAGE                    
-                );
-        
+        showNotPresentAlgoNotification(correctAlgo);
     }
 
     /**
      * Reloads the main frame by opening a new one and closing this instance
      */
     public void reloadWindow() {
-        SwingUtilities.invokeLater(() -> new MainFrame(Settings.reloadSettings()));
+        SwingUtilities.invokeLater(() -> new MainFrame(Settings.reloadSettings(), true));
         dispose();
     }
     
