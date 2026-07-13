@@ -1,7 +1,5 @@
 package net.alexf1789.swinghash;
 
-import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 import net.alexf1789.swinghash.frames.MainFrame;
 import net.alexf1789.swinghash.services.Settings;
 

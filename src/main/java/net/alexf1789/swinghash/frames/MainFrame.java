@@ -1,8 +1,5 @@
 package net.alexf1789.swinghash.frames;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 import net.alexf1789.swinghash.Main;
 import net.alexf1789.swinghash.models.HistoryHash;
 import net.alexf1789.swinghash.panels.InputPanel;
@@ -136,6 +133,9 @@ public class MainFrame extends JFrame {
                         .with(new JMenuItem("Light"))
                             .performingAction(e -> settings.setDarkTheme(false))
                         .done()
+                    .done()
+                    .with(new JMenuItem("History"))
+                        .performingAction(e -> SwingUtilities.invokeLater(() -> new HistoryFrame(settings)))
                     .done()
                 .withSubMenu("Help", 'H', true)
                     .with(new JMenuItem("About"))

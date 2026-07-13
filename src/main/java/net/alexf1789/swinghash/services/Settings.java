@@ -269,6 +269,15 @@ public class Settings {
     }
 
     /**
+     * Returns the history
+     *
+     * @return a LinkedList of HistoryHashes
+     */
+    public LinkedList<HistoryHash> getHistory() {
+        return history;
+    }
+
+    /**
      * Sets the size for the history, fallbacking on the defualt value of 5
      *
      * @param historySize is the history new size

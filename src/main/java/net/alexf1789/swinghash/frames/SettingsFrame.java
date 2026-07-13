@@ -1,8 +1,5 @@
 package net.alexf1789.swinghash.frames;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 import net.alexf1789.swinghash.panels.AlgoComboBox;
 import net.alexf1789.swinghash.services.Settings;
 
