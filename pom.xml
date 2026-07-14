@@ -3,7 +3,7 @@
   	<modelVersion>4.0.0</modelVersion>
   	<groupId>net.alexf1789</groupId>
   	<artifactId>SwingHash</artifactId>
-  	<version>0.1</version>
+  	<version>1.0</version>
   	<name>SwingHash</name>
   	<description>Simple program which computes hash of files and text</description>
   
