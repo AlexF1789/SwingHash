@@ -1,7 +1,7 @@
 SwingHash
 ===
 
-SwingHash is a simple utility created to perform and verify the hash of files and text. Currently it's under development and its usage is **advised** only if the files passed have backups.
+SwingHash is a simple utility created to perform and verify the hash of files and text. The core idea behind it is to emulate GtkHash providing the Java cross-platform advantages (for example under Windows in which GTK+ is a bit laggy). It's fully developed by hand (no AI of any kind) and it aims to give a lightweight general-purpose usage.
 
 ## Core structure
 The program is written in Java using the Swing toolkit for the GUI, the MessageDigest class for the hash computation and the Stream API and Thread class for parallel computation.
@@ -16,7 +16,15 @@ The program contains a menu bar created with a fluent approach which allows the 
 <img width="300" alt="light" src="https://github.com/user-attachments/assets/584c6d77-e63a-4678-aa63-3ee0f03ef2a3" />
 <img width="300" alt="immagine" src="https://github.com/user-attachments/assets/0878b6e5-9193-44ac-a3b8-8c8c4b995174" />
 
-## Development interest
-So far the idea for the program development is to extend the hashing algorithms to all the ones supported by the MessageDigest class. The structure itself is already made to be as modular as possible.
+It is possible, from the settings to adoperate the classical cross-platform Java Swing look.
 
-Another goal for the project is to persist the preferences, with regard to the **theme** and the **algorithms** to grant a more fluent usage experience.
+## Features
+SwingHash offers the following features:
+
+- text and file hash in all the JVM supported algorithms (at least SHA-256, SHA-512 and MD5);
+- history of the computed hashes;
+- light, dark or Swing legacy theme;
+- settings and history persistence in the file system.
+
+## Contributing
+Contributions are appreciated and accepted. Please follow the fork -> pull request approach. All contributions will be analyzed before merging.
